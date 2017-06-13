@@ -11,8 +11,16 @@ import (
 const (
     file_suffix = ".todo"
 )
+
+var current_dir string
     
 func main() {
+    current_dir,_ = os.Getwd()
+    current_dir = filepath.Join(current_dir,file_suffix)
+    _,err := os.Stat(current_dir)
+    if os.IsNotExist(err) {
+        os.Mkdir(current_dir,os.ModePerm)
+    }
     var todoType string
     app := cli.NewApp()
     app.Name = "ToDo"
@@ -65,8 +73,7 @@ func main() {
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
                     task_name := c.Args()[0]
-                    curDir,_:=os.Getwd()
-                    errMsg := addNewTask(filepath.Join(curDir, task_name + file_suffix))
+                    errMsg := addNewTask(filepath.Join(current_dir, task_name + file_suffix))
                     if errMsg != nil {
                         return cli.NewExitError("cannot create a new file for the list",101)
                     }
