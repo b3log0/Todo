@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "github.com/urfave/cli"
     "os"
     "sort"
@@ -36,18 +35,32 @@ func main() {
     }
     app.Commands = []cli.Command{
         {
+            Name: "list",
+            Aliases: []string{"l"},
+            Action: func(c *cli.Context) error{
+                editDoingFunc(listTasks,nil)
+                return nil
+            },
+        },
+        {
             Name: "add",
             Aliases: []string{"a"},
             Action: func(c *cli.Context) error{
-                fmt.Println("complete!")
+                if c.NArg() > 0{
+                    editDoingFunc(addNewTodo,c.Args())
+                    editDoingFunc(listTasks,nil)
+                }else{
+                    return cli.NewExitError("need input a task",103)
+                }
                 return nil
             },
         },
         {
             Name: "clean",
-            Aliases:[]string{"a"},
+            Aliases:[]string{"c"},
             Action: func(c *cli.Context) error {
-                fmt.Println("add!")
+                editDoingFunc(cleanCurrentList,nil)
+                editDoingFunc(listTasks,nil)
                 return nil
             },
         },
@@ -55,7 +68,12 @@ func main() {
             Name:"delete",
             Aliases:[]string{"dd"},
             Action: func(c *cli.Context) error {
-                fmt.Println("add!")
+                if c.NArg() > 0{
+                    editDoingFunc(deleteTodoByNumber,c.Args())
+                    editDoingFunc(listTasks,nil)
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
                 return nil
             },
         },
@@ -63,7 +81,12 @@ func main() {
             Name:"done",
             Aliases:[]string{"d"},
             Action: func(c *cli.Context) error {
-                fmt.Println("add!")
+                if c.NArg() > 0{
+                    editDoingFunc(doneByNumber,c.Args())
+                    editDoingFunc(listTasks,nil)
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
                 return nil
             },
         },
@@ -81,6 +104,7 @@ func main() {
                 }else{
                     return cli.NewExitError("create new todo list error, a name is required",100)
                 }
+                showTypes()
                 return nil
             },
         },
@@ -88,7 +112,12 @@ func main() {
             Name:"undone",
             Aliases:[]string{"u"},
             Action: func(c *cli.Context) error {
-                fmt.Println("add!")
+                if c.NArg() > 0{
+                    editDoingFunc(undoneByNumber,c.Args())
+                    editDoingFunc(listTasks,nil)
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
                 return nil
             },
         },

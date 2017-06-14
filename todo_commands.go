@@ -13,6 +13,7 @@ import (
 const (
 	task_mark1 = " "
 	task_mark2 = "*"
+	done_mark0 = "-"
 	done_mark1 = "[ ]"
 	done_mark2 = "[*]"
 )
@@ -31,12 +32,11 @@ func showTypes() {
 	}
 }
 
-func listTasks(filename string) error{
-	todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
+//此处的filename包含路径（在utils调用出加上了）
+func listTasks(filename string,params []string) error{
 	//如果进入其他目录执行指令，会出现此处显示为空的情况，这是由于当前目录获取错误导致
 	//不知道是否需要进行处理，暂时不处理，因为正是生成的可执行文件应该是不会变路径的
-	fmt.Println("=== "+todoType+" ===")
-	f, err := os.Open(getFilePathName(filename))
+	f, err := os.Open(filename)
 	if err != nil {
 		return err
 	}
@@ -52,15 +52,227 @@ func listTasks(filename string) error{
 			break
 		}
 		line := string(b)
-		if strings.HasPrefix(line, "_") {
+		if strings.HasPrefix(line, done_mark0) {
 			fmt.Printf("%s %03d: %s\n", done_mark2, n, strings.TrimSpace(string(line[1:])))
 		} else {
 			fmt.Printf("%s %03d: %s\n", done_mark1, n, strings.TrimSpace(line))
 		}
 		n++
-
 	}
 	return nil
+}
+
+//清除当前路径下已完成的列表
+func cleanCurrentList(filename string,params []string) error{
+	//创建一个临时文件，然后读取处理写入，删除原文件，新文件改名
+	w, err := os.Create(filename + "_")
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	br := bufio.NewReader(f)
+	for {
+		b, _, err := br.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				return err
+			}
+			break
+		}
+		line := string(b)
+		if !strings.HasPrefix(line, done_mark0) {
+			_, err = fmt.Fprintf(w, "%s\n", line)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	f.Close()
+	w.Close()
+	err = os.Remove(filename)
+	if err != nil {
+		return err
+	}
+	return os.Rename(filename+"_", filename)
+}
+
+func addNewTodo(filename string,params []string) error {
+	w, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	_, err = fmt.Fprintf(w, " %s\n", strings.Join(params, " "))
+	return err
+}
+
+func deleteTodoByNumber(filename string,params []string) error {
+	ids := []int{}
+	for _, arg := range params {
+		id, err := strconv.Atoi(arg)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, id)
+	}
+	w, err := os.Create(filename + "_")
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	br := bufio.NewReader(f)
+	n := 1
+	for {
+		b, _, err := br.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				return err
+			}
+			break
+		}
+		match := false
+		for _, id := range ids {
+			if id == n {
+				match = true
+			}
+		}
+		if !match {
+			_, err = fmt.Fprintf(w, "%s\n", string(b))
+			if err != nil {
+				return err
+			}
+		}
+		n++
+	}
+	f.Close()
+	w.Close()
+	err = os.Remove(filename)
+	if err != nil {
+		return err
+	}
+	return os.Rename(filename+"_", filename)
+}
+
+func doneByNumber(filename string,params []string) error {
+	ids := []int{}
+	for _, arg := range params {
+		id, err := strconv.Atoi(arg)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, id)
+	}
+	w, err := os.Create(filename + "_")
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	br := bufio.NewReader(f)
+	n := 1
+	for {
+		b, _, err := br.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				return err
+			}
+			break
+		}
+		match := false
+		for _, id := range ids {
+			if id == n {
+				match = true
+			}
+		}
+		line := strings.TrimSpace(string(b))
+		if match && !strings.HasPrefix(line, "-") {
+			_, err = fmt.Fprintf(w, "-%s\n", line)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = fmt.Fprintf(w, "%s\n", line)
+			if err != nil {
+				return err
+			}
+		}
+		n++
+	}
+	f.Close()
+	w.Close()
+	err = os.Remove(filename)
+	if err != nil {
+		return err
+	}
+	return os.Rename(filename+"_", filename)
+}
+
+func undoneByNumber(filename string,params []string) error {
+	ids := []int{}
+	for _, arg := range params {
+		id, err := strconv.Atoi(arg)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, id)
+	}
+	w, err := os.Create(filename + "_")
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	br := bufio.NewReader(f)
+	n := 1
+	for {
+		b, _, err := br.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				return err
+			}
+			break
+		}
+		match := false
+		for _, id := range ids {
+			if id == n {
+				match = true
+			}
+		}
+		line := strings.TrimSpace(string(b))
+		if match && strings.HasPrefix(line, "-") {
+			_, err = fmt.Fprintf(w, "%s\n", string(line[1:]))
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = fmt.Fprintf(w, "%s\n", line)
+			if err != nil {
+				return err
+			}
+		}
+		n++
+	}
+	f.Close()
+	w.Close()
+	err = os.Remove(filename)
+	if err != nil {
+		return err
+	}
+	return os.Rename(filename+"_", filename)
 }
 
 func listTasksByOrder(order string) {
@@ -69,7 +281,7 @@ func listTasksByOrder(order string) {
 		fmt.Println("input a number")
 	} else {
 		files, _ := ioutil.ReadDir(current_dir)
-		var fileName string
+		var filename string
 		index := 0
 		for _,value := range files{
 			if strings.HasSuffix(value.Name(),todo_suffix) || strings.HasSuffix(value.Name(),doing_suffix){
@@ -77,17 +289,19 @@ func listTasksByOrder(order string) {
 			}
 			if index == choose {
 				if !strings.HasSuffix(value.Name(),doing_suffix) {
-					fileName = strings.Replace(value.Name(),todo_suffix,doing_suffix,-1)
-					os.Rename(getFilePathName(value.Name()),getFilePathName(fileName))
+					filename = strings.Replace(value.Name(),todo_suffix,doing_suffix,-1)
+					os.Rename(getFilePathName(value.Name()),getFilePathName(filename))
 				} else {
-					fileName = value.Name()
+					filename = value.Name()
 				}
 			} else {
 				name := strings.Replace(value.Name(),doing_suffix,todo_suffix,-1)
 				os.Rename(getFilePathName(value.Name()),getFilePathName(name))
 			}
 		}
-		listTasks(fileName)
+		todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
+		fmt.Println("=== "+todoType+" ===")
+		listTasks(getFilePathName(filename),nil)
 	}
 }
 
