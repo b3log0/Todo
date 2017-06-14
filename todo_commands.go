@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	current_mark = "_todo_"
 	task_mark1 = " "
 	task_mark2 = "*"
 	done_mark1 = "[ ]"
@@ -22,15 +21,18 @@ func showTypes() {
 	files, _ := ioutil.ReadDir(current_dir)
 	n := 1
 	for _,value := range files{
-		if strings.HasSuffix(value.Name(),".todo") {
-			fmt.Printf("%s %03d: %s\n", task_mark1, n, strings.TrimSpace(value.Name()))
+		if strings.HasSuffix(value.Name(),todo_suffix) {
+			fmt.Printf("%s %03d: %s\n", task_mark1, n, strings.TrimSpace(strings.Replace(value.Name(),todo_suffix,"",-1)))
+			n++
+		}else if strings.HasSuffix(value.Name(),doing_suffix) {
+			fmt.Printf("%s %03d: %s\n", task_mark2, n, strings.TrimSpace(strings.Replace(value.Name(),doing_suffix,"",-1)))
 			n++
 		}
 	}
 }
 
 func listTasks(filename string) error{
-	todoType := strings.Replace(strings.Replace(filename,file_suffix,"",-1),current_mark,"",-1)
+	todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
 	//如果进入其他目录执行指令，会出现此处显示为空的情况，这是由于当前目录获取错误导致
 	//不知道是否需要进行处理，暂时不处理，因为正是生成的可执行文件应该是不会变路径的
 	fmt.Println("=== "+todoType+" ===")
@@ -50,7 +52,7 @@ func listTasks(filename string) error{
 			break
 		}
 		line := string(b)
-		if strings.HasPrefix(line, current_mark) {
+		if strings.HasPrefix(line, "_") {
 			fmt.Printf("%s %03d: %s\n", done_mark2, n, strings.TrimSpace(string(line[1:])))
 		} else {
 			fmt.Printf("%s %03d: %s\n", done_mark1, n, strings.TrimSpace(line))
@@ -68,17 +70,20 @@ func listTasksByOrder(order string) {
 	} else {
 		files, _ := ioutil.ReadDir(current_dir)
 		var fileName string
-		for index,value := range files{
-			if index+1 == choose {
-				if !strings.HasPrefix(value.Name(),current_mark) {
-					os.Rename(getFilePathName(value.Name()),getFilePathName(current_mark+value.Name()))
-					fileName = current_mark+value.Name()
+		index := 0
+		for _,value := range files{
+			if strings.HasSuffix(value.Name(),todo_suffix) || strings.HasSuffix(value.Name(),doing_suffix){
+				index = index + 1
+			}
+			if index == choose {
+				if !strings.HasSuffix(value.Name(),doing_suffix) {
+					fileName = strings.Replace(value.Name(),todo_suffix,doing_suffix,-1)
+					os.Rename(getFilePathName(value.Name()),getFilePathName(fileName))
 				} else {
 					fileName = value.Name()
 				}
-				fmt.Println(fileName)
 			} else {
-				name := strings.Replace(value.Name(),current_mark,"",-1)
+				name := strings.Replace(value.Name(),doing_suffix,todo_suffix,-1)
 				os.Rename(getFilePathName(value.Name()),getFilePathName(name))
 			}
 		}
@@ -87,7 +92,8 @@ func listTasksByOrder(order string) {
 }
 
 func addNewTask(filename string) error {
-	fmt.Println("create a new file :> "+filename)
+	type_name := strings.Replace(strings.Replace(filename,current_dir,"",-1),todo_suffix,"",-1)[1:]
+	fmt.Println("create a new type :> "+type_name)
 	f,err := os.Create(filename)
 	defer f.Close()
 	if err != nil {
