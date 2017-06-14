@@ -15,7 +15,10 @@ const (
 var current_dir string
     
 func main() {
-    current_dir,_ = os.Getwd()
+    current_dir = os.Getenv("HOME")
+    if current_dir == "" {
+        current_dir = os.Getenv("USERPROFILE")
+    }
     current_dir = filepath.Join(current_dir,todo_suffix)
     _,err := os.Stat(current_dir)
     if os.IsNotExist(err) {
