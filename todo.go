@@ -5,11 +5,13 @@ import (
     "os"
     "sort"
     "path/filepath"
+    "strconv"
 )
 
 const (
     doing_suffix = ".doing"
     todo_suffix = ".todo"
+    default_type_name = "main"
 )
 
 var current_dir string
@@ -23,6 +25,7 @@ func main() {
     _,err := os.Stat(current_dir)
     if os.IsNotExist(err) {
         os.Mkdir(current_dir,os.ModePerm)
+        addNewTask(filepath.Join(current_dir, default_type_name + doing_suffix))
     }
     var todoType string
     app := cli.NewApp()
@@ -118,6 +121,23 @@ func main() {
                 if c.NArg() > 0{
                     editDoingFunc(undoneByNumber,c.Args())
                     editDoingFunc(listTasks,nil)
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
+                return nil
+            },
+        },
+        {
+            Name:"remove",
+            Aliases:[]string{"r"},
+            Action: func(c *cli.Context) error {
+                if c.NArg() > 0{
+                    arg,err := strconv.Atoi(c.Args()[0])
+                    if err!= nil{
+                        return cli.NewExitError("need input a task number",104)
+                    }
+                    removeByNumber(arg)
+                    showTypes()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }

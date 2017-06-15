@@ -32,6 +32,20 @@ func showTypes() {
 	}
 }
 
+func removeByNumber(num int) {
+	files, _ := ioutil.ReadDir(current_dir)
+	n := 1
+	for _,value := range files{
+		if strings.HasSuffix(value.Name(),todo_suffix) || strings.HasSuffix(value.Name(),doing_suffix) {
+			if n == num {
+				os.Remove(getFilePathName(value.Name()))
+				break
+			}
+			n++
+		}
+	}
+}
+
 //此处的filename包含路径（在utils调用出加上了）
 func listTasks(filename string,params []string) error{
 	//如果进入其他目录执行指令，会出现此处显示为空的情况，这是由于当前目录获取错误导致
