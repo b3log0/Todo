@@ -5,6 +5,7 @@ import (
     "os"
     "sort"
     "path/filepath"
+    "strconv"
 )
 
 const (
@@ -118,6 +119,23 @@ func main() {
                 if c.NArg() > 0{
                     editDoingFunc(undoneByNumber,c.Args())
                     editDoingFunc(listTasks,nil)
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
+                return nil
+            },
+        },
+        {
+            Name:"remove",
+            Aliases:[]string{"r"},
+            Action: func(c *cli.Context) error {
+                if c.NArg() > 0{
+                    arg,err := strconv.Atoi(c.Args()[0])
+                    if err!= nil{
+                        return cli.NewExitError("need input a task number",104)
+                    }
+                    removeByNumber(arg)
+                    showTypes()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
