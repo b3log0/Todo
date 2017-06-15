@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fatih/color"
 	"path/filepath"
 	"io/ioutil"
 	"strings"
@@ -20,4 +21,8 @@ func editDoingFunc(doingFunc func(string,[]string) error,params []string) error 
 		}
 	}
 	return nil
+}
+
+func colorPrint(output string,color string){
+	
 }
