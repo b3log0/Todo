@@ -11,6 +11,7 @@ import (
 const (
     doing_suffix = ".doing"
     todo_suffix = ".todo"
+    default_type_name = "main"
 )
 
 var current_dir string
@@ -24,6 +25,7 @@ func main() {
     _,err := os.Stat(current_dir)
     if os.IsNotExist(err) {
         os.Mkdir(current_dir,os.ModePerm)
+        addNewTask(filepath.Join(current_dir, default_type_name + doing_suffix))
     }
     var todoType string
     app := cli.NewApp()
