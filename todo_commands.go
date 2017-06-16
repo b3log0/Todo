@@ -317,9 +317,9 @@ func listTasksByOrder(order string) {
 				os.Rename(getFilePathName(value.Name()),getFilePathName(name))
 			}
 		}
-		todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
-		color.Yellow("=== "+todoType+" ===")
-		listTasks(getFilePathName(filename),nil)
+		// todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
+		// color.Yellow("=== "+todoType+" ===")
+		// listTasks(getFilePathName(filename),nil)
 	}
 }
 
