@@ -10,49 +10,44 @@ mattn的todo简单好用，在使用过程中，我发现自己想要对不同�
 - new指令：创建一个新的todo类型
 - remove指令：删除指定的数据类型
 
-获取方式：
-```shell
-go get github.com/b3log/Todo
-```
-
-使用过程可能如下(图例中是在当前目录下执行的指令，所以有./，实际放到环境变量下的指令不需要加，部分图例可能因为后续改进有轻微差异)：
+使用过程可能如下(图例中是在当前目录下执行的指令，所以有./，实际放到环境变量下的指令不需要加)：
 ```shell
 todo #显示当前有何类型
 ```
-![1](1.png)
+![1](https://user-images.githubusercontent.com/2569600/27209005-cb59dfd0-527b-11e7-975c-b4beaab66452.png)
 ```shell
 todo 1 # 选择序号为1的类型，此时当前工作的类型是1
 ```
-![2](2.png)
+![2](https://user-images.githubusercontent.com/2569600/27209007-cb5e8170-527b-11e7-83d1-560ba06247a1.png)
 ```shell
 todo add something todo # 向类型1添加一个待办事项
 ```
-![3](3.png)
+![3](https://user-images.githubusercontent.com/2569600/27209006-cb5e5722-527b-11e7-8b95-4ae146b33bda.png)
 ```shell
 todo add something todo 2 # 继续添加
 todo add something todo 3 # 继续添加
 ```
-![4](4.png)
+![4](https://user-images.githubusercontent.com/2569600/27209008-cb6100da-527b-11e7-8bad-cf7c02a3687f.png)
 ```shell
 todo done 1 # 完成了第一个事项
 ```
-![5](5.png)
+![5](https://user-images.githubusercontent.com/2569600/27209010-cb627956-527b-11e7-80b9-8961ef66fcbe.png)
 ```shell
 todo delete 2 # 删除第二个待办事项
 ```
-![6](6.png)
+![6](https://user-images.githubusercontent.com/2569600/27209009-cb6219b6-527b-11e7-9a13-22ad3e71190b.png)
 ```shell
 todo clean # 清除已完成的事项
 ```
-![7](7.png)
+![7](https://user-images.githubusercontent.com/2569600/27209011-cb865d8a-527b-11e7-9046-68d316cc951c.png)
 ```shell
 todo 2 # 选择序号为2的类型，此时看到2类型下的待办事项
 ```
-![8](8.png)
+![8](https://user-images.githubusercontent.com/2569600/27209014-cb92656c-527b-11e7-944d-c181607573af.png)
 ```shell
 todo remove 2 # 删除类型为2的待办事项
 ```
-![9](9.png)
+![9](https://user-images.githubusercontent.com/2569600/27209012-cb8e030a-527b-11e7-82f6-a88c099cdef4.png)
 ```shell
 todo 1 # 再次选择类型为1的待办事项
 ```
@@ -60,6 +55,6 @@ todo 1 # 再次选择类型为1的待办事项
 ... # other jobs
 todo list # 显示当前工作的待办事项
 ```
-![10](10.png)
+![10](https://user-images.githubusercontent.com/2569600/27209013-cb8fbfe2-527b-11e7-9e7c-beb7625f3567.png)
 
 欢迎各位使用 :tada:
