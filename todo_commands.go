@@ -8,25 +8,29 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"github.com/fatih/color"
 )
 
 const (
 	task_mark1 = " "
 	task_mark2 = "*"
 	done_mark0 = "-"
-	done_mark1 = "[ ]"
-	done_mark2 = "[*]"
+	done_mark1 = "\u2610" //on Mac
+	done_mark2 = "\u2611" //on Mac
+	// done_mark1 = "[ ]" //on Windows
+	// done_mark2 = "[*]" //on Windows
 )
 
 func showTypes() {
+	boldMagenta := color.New(color.FgMagenta).Add(color.Bold)
 	files, _ := ioutil.ReadDir(current_dir)
 	n := 1
 	for _,value := range files{
 		if strings.HasSuffix(value.Name(),todo_suffix) {
-			fmt.Printf("%s %03d: %s\n", task_mark1, n, strings.TrimSpace(strings.Replace(value.Name(),todo_suffix,"",-1)))
+			color.Cyan("%s %03d: %s\n", task_mark1, n, strings.TrimSpace(strings.Replace(value.Name(),todo_suffix,"",-1)))
 			n++
 		}else if strings.HasSuffix(value.Name(),doing_suffix) {
-			fmt.Printf("%s %03d: %s\n", task_mark2, n, strings.TrimSpace(strings.Replace(value.Name(),doing_suffix,"",-1)))
+			boldMagenta.Printf("%s %03d: %s\n", task_mark2, n, strings.TrimSpace(strings.Replace(value.Name(),doing_suffix,"",-1)))
 			n++
 		}
 	}
@@ -67,9 +71,9 @@ func listTasks(filename string,params []string) error{
 		}
 		line := string(b)
 		if strings.HasPrefix(line, done_mark0) {
-			fmt.Printf("%s %03d: %s\n", done_mark2, n, strings.TrimSpace(string(line[1:])))
+			color.Green("%s %03d: %s\n", done_mark2, n, strings.TrimSpace(string(line[1:])))
 		} else {
-			fmt.Printf("%s %03d: %s\n", done_mark1, n, strings.TrimSpace(line))
+			color.Magenta("%s %03d: %s\n", done_mark1, n, strings.TrimSpace(line))
 		}
 		n++
 	}
@@ -292,7 +296,7 @@ func undoneByNumber(filename string,params []string) error {
 func listTasksByOrder(order string) {
 	choose,err:= strconv.Atoi(order)
 	if err != nil {
-		fmt.Println("input a number")
+		color.Red("input a number")
 	} else {
 		files, _ := ioutil.ReadDir(current_dir)
 		var filename string
@@ -313,15 +317,15 @@ func listTasksByOrder(order string) {
 				os.Rename(getFilePathName(value.Name()),getFilePathName(name))
 			}
 		}
-		todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
-		fmt.Println("=== "+todoType+" ===")
-		listTasks(getFilePathName(filename),nil)
+		// todoType := strings.Replace(strings.Replace(filename,todo_suffix,"",-1),doing_suffix,"",-1)
+		// color.Yellow("=== "+todoType+" ===")
+		// listTasks(getFilePathName(filename),nil)
 	}
 }
 
 func addNewTask(filename string) error {
-	type_name := strings.Replace(strings.Replace(filename,current_dir,"",-1),todo_suffix,"",-1)[1:]
-	fmt.Println("create a new type :> "+type_name)
+	// type_name := strings.Replace(strings.Replace(filename,current_dir,"",-1),todo_suffix,"",-1)[1:]
+	// fmt.Println("create a new type :> "+type_name)
 	f,err := os.Create(filename)
 	defer f.Close()
 	if err != nil {

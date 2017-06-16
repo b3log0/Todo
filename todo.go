@@ -150,10 +150,8 @@ func main() {
     app.Action = func(c *cli.Context) error {
         if c.NArg() > 0{
             listTasksByOrder(c.Args()[0])
-        }else{
-            showTypes()
         }
-        
+        showTypes()
         return nil
     }
     sort.Sort(cli.FlagsByName(app.Flags))
