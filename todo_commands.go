@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"github.com/fatih/color"
+	"os/exec"
 )
 
 const (
@@ -332,4 +333,39 @@ func addNewTask(filename string) error {
 		return err
 	}
 	return nil
+}
+
+func addNewLink(params []string) error {
+	w, err := os.OpenFile(getFilePathName("todo.link"), os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+	_, err = fmt.Fprintf(w, " %s\n", strings.Join(params, " "))
+	return err
+}
+
+func jumpByNumber(id int) error {
+	filename := getFilePathName("todo.link")
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	br := bufio.NewReader(f)
+	n := 1
+	for {
+		b, _, err := br.ReadLine()
+		if err != nil {
+			if err != io.EOF {
+				return err
+			}
+			break
+		}
+		match := false
+		if id == n {
+			cmd := exec.Command("/bin/sh/", "-c", "linux命令")
+		}
+		n++
+	}
+	f.Close()
 }

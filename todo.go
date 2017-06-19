@@ -26,6 +26,7 @@ func main() {
     if os.IsNotExist(err) {
         os.Mkdir(current_dir,os.ModePerm)
         addNewTask(filepath.Join(current_dir, default_type_name + doing_suffix))
+        addNewTask(filepath.Join(current_dir, "todo.link"))
     }
     var todoType string
     app := cli.NewApp()
@@ -138,6 +139,34 @@ func main() {
                     }
                     removeByNumber(arg)
                     showTypes()
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
+                return nil
+            },
+        },
+        {
+            Name: "link",
+            Aliases: []string{"a"},
+            Action: func(c *cli.Context) error{
+                if c.NArg() > 0{
+                    addNewLink(c.Args()[0])
+                }else{
+                    return cli.NewExitError("need input a link",106)
+                }
+                return nil
+            },
+        },
+        {
+            Name:"jump",
+            Aliases:[]string{"j"},
+            Action: func(c *cli.Context) error {
+                if c.NArg() > 0{
+                    arg,err := strconv.Atoi(c.Args())
+                    if err!= nil{
+                        return cli.NewExitError("need input a task number",104)
+                    }
+                    jumpByNumber(arg)
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
