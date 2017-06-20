@@ -72,9 +72,9 @@ func listTasks(filename string,params []string) error{
 		}
 		line := string(b)
 		if strings.HasPrefix(line, done_mark0) {
-			color.Green("%s %03d: %s\n", done_mark2, n, strings.TrimSpace(string(line[1:])))
+			color.Green("%s %03d: %s\n", getDoneMark(), n, strings.TrimSpace(string(line[1:])))
 		} else {
-			color.Magenta("%s %03d: %s\n", done_mark1, n, strings.TrimSpace(line))
+			color.Magenta("%s %03d: %s\n", getUnDoneMark(), n, strings.TrimSpace(line))
 		}
 		n++
 	}
