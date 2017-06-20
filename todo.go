@@ -145,34 +145,6 @@ func main() {
                 return nil
             },
         },
-        {
-            Name: "link",
-            Aliases: []string{"a"},
-            Action: func(c *cli.Context) error{
-                if c.NArg() > 0{
-                    addNewLink(c.Args()[0])
-                }else{
-                    return cli.NewExitError("need input a link",106)
-                }
-                return nil
-            },
-        },
-        {
-            Name:"jump",
-            Aliases:[]string{"j"},
-            Action: func(c *cli.Context) error {
-                if c.NArg() > 0{
-                    arg,err := strconv.Atoi(c.Args())
-                    if err!= nil{
-                        return cli.NewExitError("need input a task number",104)
-                    }
-                    jumpByNumber(arg)
-                }else{
-                    return cli.NewExitError("need input a task number",104)
-                }
-                return nil
-            },
-        },
     }
 
     //定义一级指令行为，有参数时显示指定序号的todo清单内容，否则显示所有todo清单名称
