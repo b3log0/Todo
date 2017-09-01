@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	//key确定时，field确定唯一value
 	task1 := newTask("main", "test test test3")
 	task2 := newTask("fresh", "test test test1")
 	insertTask("main", string(task1.toJSON()))
