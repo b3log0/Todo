@@ -1,4 +1,4 @@
-package src
+package main
 
 import (
     "github.com/urfave/cli"
@@ -9,15 +9,11 @@ import (
 
 )
 
-const (
-    doing_suffix = ".doing"
-    todo_suffix = ".todo"
-    default_type_name = "main"
-)
+
 
 var current_dir string
     
-func main() {
+func zephyr_main() {
     current_dir = os.Getenv("HOME")
     if current_dir == "" {
         current_dir = os.Getenv("USERPROFILE")

@@ -1,4 +1,4 @@
-package src
+package main
 
 import (
 	"path/filepath"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"os/exec"
 	"fmt"
-	"github.com/jasonlvhit/gocron"
+	//"github.com/jasonlvhit/gocron"
 )
 
 //参数的filename不包含路径
@@ -42,3 +42,6 @@ func sendNotify(title string, message string,imagePath string) error {
 	}
 	return nil
 }
+
+//gocron.Every(5).Seconds().Do(sendNotify, "hello", "This notify message is from zephyr","/home/zephyr/Documents/GithubSpace/Todo/pics/icon.png")
+//<- gocron.Start()
