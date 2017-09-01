@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
     "github.com/urfave/cli"
@@ -6,6 +6,7 @@ import (
     "sort"
     "path/filepath"
     "strconv"
+
 )
 
 const (
