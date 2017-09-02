@@ -9,6 +9,17 @@ import (
 	//"github.com/jasonlvhit/gocron"
 )
 
+func newTask(domain string, content string) Task{
+	return Task{
+		Domain:domain,
+		Content:content,
+		State:false,
+		Comment:"",
+		Created:time.Now().Format("2006-01-02 15:04:05"),
+		Modified:time.Now().Format("2006-01-02 15:04:05"),
+	}
+}
+
 //参数的filename不包含路径
 func getFilePathName(filename string) string {
 	return filepath.Join(current_dir,filename)
