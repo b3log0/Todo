@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func main() {
+func zephyr_main() {
 	//key确定时，field确定唯一value
 	// task1 := newTask("main", "test test test3")
 	// task2 := newTask("fresh", "test test test1")

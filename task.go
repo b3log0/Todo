@@ -7,11 +7,9 @@ import (
 
 //redis hash key
 //save as List
-type Domain struct {
-	Key int
-	Name string
-	State bool
-}
+// type Domain struct {
+// 	Name string
+// }
 
 //redis hash field
 //save as Set

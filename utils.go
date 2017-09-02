@@ -7,8 +7,17 @@ import (
 	"os/exec"
 	"fmt"
 	"time"
+	"strconv"
+	"github.com/fatih/color"
 	//"github.com/jasonlvhit/gocron"
 )
+
+// func newCommand(number int64,order string) Command{
+// 	return Command{
+// 		Number:number,
+// 		Order:order,
+// 	}
+// }
 
 func newTask(content string) Task{
 	return Task{
@@ -26,14 +35,52 @@ func getFilePathName(filename string) string {
 }
 
 //参数的filename包含路径
-func editDoingFunc(doingFunc func(string,[]string) error,params []string) error {
+func editDoingFunc(doingFunc func([]string),params []string) error {
 	files, _ := ioutil.ReadDir(current_dir)
 	for _,value := range files{
 		if strings.HasSuffix(value.Name(),DOING_SUFFIX) {
-			doingFunc(getFilePathName(value.Name()),params)
+			doingFunc(params)
 		}
 	}
 	return nil
+}
+
+func printTask(num int,task Task){
+	if task.State == true {
+		color.Green("%s %03d: %s\n", DONE_MARK2, num, strings.TrimSpace(task.Content))
+	}else{
+		color.Magenta("%s %03d: %s\n", DONE_MARK1, num, strings.TrimSpace(task.Content))
+	}
+}
+
+func printDomain(num int,domain string,current bool){
+	boldMagenta := color.New(color.FgMagenta).Add(color.Bold)
+	if current==true {
+		boldMagenta.Printf("%s %03d: %s\n", TASK_MARK2, num, strings.TrimSpace(domain))
+	}else{
+		color.Cyan("%s %03d: %s\n", TASK_MARK1, num, strings.TrimSpace(domain))
+	}
+}
+
+func getFirstIdFromParams(params []string) int{
+	id,err := strconv.Atoi(params[0])
+	if err == nil {
+		return id
+	}else{
+		return -1
+	}
+}
+
+func getIdsFromParams(params []string) []int{
+	ids := []int{}
+	for _, arg := range params {
+		id, err := strconv.Atoi(arg)
+		if err == nil {
+			ids = append(ids, id)
+		}
+		
+	}
+	return ids
 }
 
 func sendNotify(title string, message string,imagePath string) error {

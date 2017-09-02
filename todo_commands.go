@@ -2,7 +2,7 @@ package main
 
 import (
 	// "fmt"
-	// "strings"
+	"strings"
 	// "io/ioutil"
 	// "bufio"
 	// "io"
@@ -12,44 +12,52 @@ import (
 	"encoding/json"
 )
 
-type command struct{
-	order string
-	number int64
+type Command struct{
+	Order []string
+	
 	second int
 	minitue int
 	hour int
 	day int
 	month int
+	year int
 }
 
-type todoCommand interface{
-	showTypes() []string
-	removeByNumber(num int64)
-	listTasks() []string
-	cleanCurrentList()
-	addNewTask(domain string) bool
-	deleteTodoByNumber(num int64)
-	doneByNumber(num int64)
-	undoneByNumber(num int64)
-	listTasksByOrder(num int64)
-	addNewTodo() error
+// type todoCommand interface{
+// 	showTypes()
+// 	removeByNumber(num int64)
+// 	listTasks()
+// 	cleanCurrentList()
+// 	addNewTask(domain string)
+// 	deleteTodoByNumber(num int64)
+// 	doneByNumber(num int64)
+// 	undoneByNumber(num int64)
+// 	listTasksByOrder(num int64)
+// 	addNewTodo()
+// }
+
+func showTypes(){
+	current :=getCurrentDomain()
+	for index,domain := range getDomains(){
+		printDomain(index,domain,domain==current)
+	}
 }
 
-func (c command) showTypes() []string{
-	return getDomains()
-}
-
-func (c command) removeByNumber(num int64){
-	domain := getDomain(num)
+func removeByNumber(param int){
+	domain := getDomain(int64(param))
 	delDomain(domain)
 }
 
-func (c command) listTasks() []string{
+func listTasks(params []string){
 	current :=getCurrentDomain()
-	return getTasks(current)
+	for index,task := range getTasks(current){
+		temp := Task{}
+		json.Unmarshal([]byte(task),&temp)
+		printTask(index,temp)
+	}
 }
 
-func (c command) cleanCurrentList() {
+func cleanCurrentList(params []string) {
 	current :=getCurrentDomain() //应该可以不用每次都获取一遍
 	for _,task := range getTasks(current) {
 		temp := Task{}
@@ -60,38 +68,58 @@ func (c command) cleanCurrentList() {
 	}
 }
 
-func (c command) addNewTask(domain string) bool{
-	return insertDomain(domain)
+func addNewTask(param string){
+		insertDomain(param)
 }
 
-func (c command) deleteTodoByNumber(num int64) {
+func deleteTodoByNumber(params []string) {
+	ids := getIdsFromParams(params)
 	current := getCurrentDomain()
-	task := getTask(current,num)
-	delTask(current,task)
+	if len(ids)>0{
+		for _,id:=range ids{
+			task := getTask(current,int64(id))
+			delTask(current,task)
+		}
+	}
 }
 
-func (c command) doneByNumber(num int64) {
+func doneByNumber(params []string) {
 	task := Task{}
 	current := getCurrentDomain()
-	json.Unmarshal([]byte(getTask(current,num)),&task)
-	task.State = false
-	setTask(current,task.toJSONStr())
+	ids := getIdsFromParams(params)
+	if len(ids)>0{
+		for _,id:=range ids{
+			json.Unmarshal([]byte(getTask(current,int64(id))),&task)
+			task.State = false
+			setTask(current,task.toJSONStr())
+		}
+	}
 }
 
-func (c command) undoneByNumber(num int64) {
+func undoneByNumber(params []string) {
 	task := Task{}
 	current := getCurrentDomain()
-	json.Unmarshal([]byte(getTask(current,num)),&task)
-	task.State = true
-	setTask(current,task.toJSONStr())
+	ids := getIdsFromParams(params)
+	if len(ids)>0{
+		for _,id:=range ids{
+			json.Unmarshal([]byte(getTask(current,int64(id))),&task)
+			task.State = true
+			setTask(current,task.toJSONStr())
+		}
+	}
 }
 
-func (c command) listTasksByOrder(num int64) []string{
-	domain := getDomain(num)
-	return getTasks(domain)
+func listTasksByOrder(param int){
+	domain := getDomain(int64(param))
+
+	for index,task := range getTasks(domain){
+		temp := Task{}
+		json.Unmarshal([]byte(task),&temp)
+		printTask(index,temp)
+	}
 }
 
-func (c command) addNewTodo(content string) {
+func addNewTodo(params []string) {
 	current := getCurrentDomain()
-	setTask(current,newTask(content).toJSONStr())
+	setTask(current,newTask(strings.Join(params, " ")).toJSONStr())
 }
