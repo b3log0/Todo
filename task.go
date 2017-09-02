@@ -2,15 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"time"
+	// "time"
 )
 
 //redis hash key
 //save as List
 type Domain struct {
+	Key int
 	Name string
 	State bool
-	Field string
 }
 
 //redis hash field
@@ -26,7 +26,7 @@ type Task struct {
 
 
 
-func (t Task) toJSON() []byte {
+func (t Task) toJSONStr() string {
 	task, _ := json.Marshal(&t)
-	return task
+	return string(task)
 }

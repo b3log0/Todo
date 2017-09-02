@@ -6,12 +6,12 @@ import (
 	"strings"
 	"os/exec"
 	"fmt"
+	"time"
 	//"github.com/jasonlvhit/gocron"
 )
 
-func newTask(domain string, content string) Task{
+func newTask(content string) Task{
 	return Task{
-		Domain:domain,
 		Content:content,
 		State:false,
 		Comment:"",
@@ -29,7 +29,7 @@ func getFilePathName(filename string) string {
 func editDoingFunc(doingFunc func(string,[]string) error,params []string) error {
 	files, _ := ioutil.ReadDir(current_dir)
 	for _,value := range files{
-		if strings.HasSuffix(value.Name(),doing_suffix) {
+		if strings.HasSuffix(value.Name(),DOING_SUFFIX) {
 			doingFunc(getFilePathName(value.Name()),params)
 		}
 	}
