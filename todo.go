@@ -10,11 +10,10 @@ import (
 
 
 
-var current_dir string
-    
 func main() {
     //考虑此处进行初始化redis
-    
+    initTodo()
+
     var todoType string
     app := cli.NewApp()
     app.Name = "ToDo"

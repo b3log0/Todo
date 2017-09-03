@@ -1,12 +1,9 @@
 package main
 
 import (
-	"path/filepath"
 	"strings"
 	"os/exec"
 	"fmt"
-	"time"
-	"strconv"
 	"github.com/fatih/color"
 	//"github.com/jasonlvhit/gocron"
 )
@@ -18,26 +15,14 @@ import (
 // 	}
 // }
 
-func newTask(content string) Task{
-	return Task{
-		Content:content,
-		State:false,
-		Comment:"",
-		Created:time.Now().Format("2006-01-02 15:04:05"),
-		Modified:time.Now().Format("2006-01-02 15:04:05"),
-	}
-}
 
-//参数的filename不包含路径
-func getFilePathName(filename string) string {
-	return filepath.Join(current_dir,filename)
-}
 
-func printTask(num int,task Task){
-	if task.State == true {
-		color.Green("%s %03d: %s\n", DONE_MARK2, num, strings.TrimSpace(task.Content))
+
+func printTask(num int,taskDetail TaskDetail){
+	if taskDetail.State == true {
+		color.Green("%s %03d: %s\n", DONE_MARK2, num, strings.TrimSpace(taskDetail.Content))
 	}else{
-		color.Magenta("%s %03d: %s\n", DONE_MARK1, num, strings.TrimSpace(task.Content))
+		color.Magenta("%s %03d: %s\n", DONE_MARK1, num, strings.TrimSpace(taskDetail.Content))
 	}
 }
 
@@ -50,26 +35,6 @@ func printDomain(num int,domain string,current bool){
 	}
 }
 
-func getFirstIdFromParams(params []string) int{
-	id,err := strconv.Atoi(params[0])
-	if err == nil {
-		return id
-	}else{
-		return -1
-	}
-}
-
-func getIdsFromParams(params []string) []int{
-	ids := []int{}
-	for _, arg := range params {
-		id, err := strconv.Atoi(arg)
-		if err == nil {
-			ids = append(ids, id)
-		}
-		
-	}
-	return ids
-}
 
 func sendNotify(title string, message string,imagePath string) error {
 	args := []string{}

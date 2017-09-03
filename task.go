@@ -11,9 +11,15 @@ import (
 // 	Name string
 // }
 
+type Task struct{
+	key string
+	taskDetail string
+}
+
+
 //redis hash field
 //save as Set
-type Task struct {
+type TaskDetail struct {
 	//注意大小写，大写表示public，小写表示private，json.Marshal要求public
 	Content  string `json:"content"`
 	State    bool 	`json:"state"`
@@ -24,7 +30,7 @@ type Task struct {
 
 
 
-func (t Task) toJSONStr() string {
+func (t TaskDetail) toJSONStr() string {
 	task, _ := json.Marshal(&t)
 	return string(task)
 }
