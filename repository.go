@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-redis/redis"
+	"fmt"
 )
 
 func setCurrentDomain(domain string) {
@@ -95,7 +96,7 @@ func delDomain(domain string) bool {
 	}
 }
 
-func setTask(domain string, task string) {
+func setTask(domain string, index int64, task string) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -103,8 +104,7 @@ func setTask(domain string, task string) {
 	})
 	_, err := client.Ping().Result()
 	if err == nil {
-		len,_ := client.HLen(REDIS_KEY + "." + domain).Result()
-		client.HSet(REDIS_KEY + "." + domain, string(len), task).Result()
+		client.HSet(REDIS_KEY + "." + domain, string(index), task).Result()
 	}
 }
 
@@ -122,7 +122,22 @@ func getTask(domain string, index int64) string {
 	return result
 }
 
-func getTasks(domain string) map[string]string {
+func getTaskCount(domain string) int64 {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0, // use default DB
+	})
+	_, err := client.Ping().Result()
+	if err == nil {
+		result, _ := client.HLen(REDIS_KEY + "." + domain).Result()
+		return result
+	} else {
+		return 0
+	}
+}
+
+func getAllTasks(domain string) map[string]string {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -131,6 +146,7 @@ func getTasks(domain string) map[string]string {
 	_, err := client.Ping().Result()
 	if err == nil {
 		result, _ := client.HGetAll(REDIS_KEY + "." + domain).Result()
+		fmt.Println(result["01"])
 		return result
 	} else {
 		return nil

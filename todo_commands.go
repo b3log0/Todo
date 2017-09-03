@@ -50,7 +50,7 @@ func removeByNumber(param int){
 
 func listTasks(){
 	current :=getCurrentDomain()
-	for index,task := range getTasks(current){
+	for index,task := range getAllTasks(current){
 		temp := Task{}
 		json.Unmarshal([]byte(task),&temp)
 		printTask(index,temp)
@@ -59,7 +59,7 @@ func listTasks(){
 
 func cleanCurrentList() {
 	current :=getCurrentDomain() //应该可以不用每次都获取一遍
-	for _,task := range getTasks(current) {
+	for _,task := range getAllTasks(current) {
 		temp := Task{}
 		json.Unmarshal([]byte(task),&temp)
 		if temp.State == true {
@@ -91,7 +91,8 @@ func doneByNumber(params []string) {
 		for _,id:=range ids{
 			json.Unmarshal([]byte(getTask(current,int64(id))),&task)
 			task.State = true
-			setTask(current,task.toJSONStr())
+			len := getTaskCount(current)
+			setTask(current,len,task.toJSONStr())
 		}
 	}
 }
@@ -104,7 +105,8 @@ func undoneByNumber(params []string) {
 		for _,id:=range ids{
 			json.Unmarshal([]byte(getTask(current,int64(id))),&task)
 			task.State = true
-			setTask(current,task.toJSONStr())
+			len := getTaskCount(current)
+			setTask(current,len,task.toJSONStr())
 		}
 	}
 }
@@ -112,7 +114,7 @@ func undoneByNumber(params []string) {
 func listTasksByOrder(param int){
 	domain := getDomain(int64(param))
 	setCurrentDomain(domain)
-	for index,task := range getTasks(domain){
+	for index,task := range getAllTasks(domain){
 		temp := Task{}
 		json.Unmarshal([]byte(task),&temp)
 		printTask(index,temp)
@@ -121,5 +123,6 @@ func listTasksByOrder(param int){
 
 func addNewTodo(params []string) {
 	current := getCurrentDomain()
-	setTask(current,newTask(strings.Join(params, " ")).toJSONStr())
+	len := getTaskCount(current)
+	setTask(current,len,newTask(strings.Join(params, " ")).toJSONStr())
 }
