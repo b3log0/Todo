@@ -19,4 +19,4 @@
 # Idea
 *.i*
 .idea
-*.db
+*.rdb

@@ -48,7 +48,7 @@ func removeByNumber(param int){
 	delDomain(domain)
 }
 
-func listTasks(params []string){
+func listTasks(){
 	current :=getCurrentDomain()
 	for index,task := range getTasks(current){
 		temp := Task{}
@@ -57,7 +57,7 @@ func listTasks(params []string){
 	}
 }
 
-func cleanCurrentList(params []string) {
+func cleanCurrentList() {
 	current :=getCurrentDomain() //应该可以不用每次都获取一遍
 	for _,task := range getTasks(current) {
 		temp := Task{}
@@ -90,7 +90,7 @@ func doneByNumber(params []string) {
 	if len(ids)>0{
 		for _,id:=range ids{
 			json.Unmarshal([]byte(getTask(current,int64(id))),&task)
-			task.State = false
+			task.State = true
 			setTask(current,task.toJSONStr())
 		}
 	}
@@ -111,7 +111,7 @@ func undoneByNumber(params []string) {
 
 func listTasksByOrder(param int){
 	domain := getDomain(int64(param))
-
+	setCurrentDomain(domain)
 	for index,task := range getTasks(domain){
 		temp := Task{}
 		json.Unmarshal([]byte(task),&temp)

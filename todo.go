@@ -32,7 +32,7 @@ func main() {
             Name: "list",
             Aliases: []string{"l"},
             Action: func(c *cli.Context) error{
-                editDoingFunc(listTasks,nil)
+                listTasks()
                 return nil
             },
         },
@@ -41,8 +41,8 @@ func main() {
             Aliases: []string{"a"},
             Action: func(c *cli.Context) error{
                 if c.NArg() > 0{
-                    editDoingFunc(addNewTodo,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    addNewTodo(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task",103)
                 }
@@ -53,8 +53,8 @@ func main() {
             Name: "clean",
             Aliases:[]string{"c"},
             Action: func(c *cli.Context) error {
-                editDoingFunc(cleanCurrentList,nil)
-                editDoingFunc(listTasks,nil)
+                cleanCurrentList()
+                listTasks()
                 return nil
             },
         },
@@ -63,8 +63,8 @@ func main() {
             Aliases:[]string{"dd"},
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
-                    editDoingFunc(deleteTodoByNumber,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    deleteTodoByNumber(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
@@ -76,8 +76,8 @@ func main() {
             Aliases:[]string{"d"},
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
-                    editDoingFunc(doneByNumber,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    doneByNumber(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
@@ -107,8 +107,8 @@ func main() {
             Aliases:[]string{"u"},
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
-                    editDoingFunc(undoneByNumber,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    undoneByNumber(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }

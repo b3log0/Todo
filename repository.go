@@ -3,7 +3,8 @@ package main
 import (
 	"github.com/go-redis/redis"
 )
-func setCurrentDomain(domain string){
+
+func setCurrentDomain(domain string) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -11,11 +12,11 @@ func setCurrentDomain(domain string){
 	})
 	_, err := client.Ping().Result()
 	if err == nil {
-		client.Set(CURRENT_KEY,domain,0)
+		client.Set(CURRENT_KEY, domain, 0)
 	}
 }
 
-func getCurrentDomain() string{
+func getCurrentDomain() string {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -25,25 +26,25 @@ func getCurrentDomain() string{
 	if err != nil {
 		return ""
 	}
-	result,_ := client.Get(CURRENT_KEY).Result()
-	return result 
-}
-
-func getDomain(index int64) string{
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0, // use default DB
-	})
-	_, err := client.Ping().Result()
-	if err != nil {
-		return ""
-	}
-	result,_:=client.LIndex(REDIS_KEY,index).Result()
+	result, _ := client.Get(CURRENT_KEY).Result()
 	return result
 }
 
-func insertDomain(domain string) bool{
+func getDomain(index int64) string {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0, // use default DB
+	})
+	_, err := client.Ping().Result()
+	if err != nil {
+		return ""
+	}
+	result, _ := client.LIndex(REDIS_KEY, index).Result()
+	return result
+}
+
+func insertDomain(domain string) bool {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -53,15 +54,15 @@ func insertDomain(domain string) bool{
 	if err != nil {
 		return false
 	}
-	result,_ := client.RPush(REDIS_KEY,domain).Result()
+	result, _ := client.RPush(REDIS_KEY, domain).Result()
 	if result > 0 {
 		return true
-	}else{
+	} else {
 		return false
 	}
 }
 
-func getDomains() []string{
+func getDomains() []string {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -69,14 +70,14 @@ func getDomains() []string{
 	})
 	_, err := client.Ping().Result()
 	if err == nil {
-		result,_ := client.LRange(REDIS_KEY,0,-1).Result()
+		result, _ := client.LRange(REDIS_KEY, 0, -1).Result()
 		return result
-	}else{
+	} else {
 		return nil
 	}
 }
 
-func delDomain(domain string) bool{
+func delDomain(domain string) bool {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -86,33 +87,28 @@ func delDomain(domain string) bool{
 	if err != nil {
 		return false
 	}
-	result,_ := client.LRem(REDIS_KEY,0,domain).Result()
+	result, _ := client.LRem(REDIS_KEY, 0, domain).Result()
 	if result > 0 {
 		return true
-	}else{
+	} else {
 		return false
 	}
 }
 
-func setTask(domain string,task string) bool {
+func setTask(domain string, task string) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0, // use default DB
 	})
 	_, err := client.Ping().Result()
-	if err != nil {
-		return false
-	}
-	result,_ := client.RPush(domain,task).Result()
-	if result > 0 {
-		return true
-	}else{
-		return false
+	if err == nil {
+		len,_ := client.HLen(REDIS_KEY + "." + domain).Result()
+		client.HSet(REDIS_KEY + "." + domain, string(len), task).Result()
 	}
 }
 
-func getTask(domain string,index int64) string{
+func getTask(domain string, index int64) string {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -122,11 +118,11 @@ func getTask(domain string,index int64) string{
 	if err != nil {
 		return ""
 	}
-	result,_:=client.LIndex(domain,index).Result()
+	result, _ := client.HGet(REDIS_KEY + "." + domain, string(index)).Result()
 	return result
 }
 
-func getTasks(domain string) []string{
+func getTasks(domain string) map[string]string {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -134,27 +130,21 @@ func getTasks(domain string) []string{
 	})
 	_, err := client.Ping().Result()
 	if err == nil {
-		result,_:=client.LRange(domain,0,-1).Result()
+		result, _ := client.HGetAll(REDIS_KEY + "." + domain).Result()
 		return result
-	}else{
+	} else {
 		return nil
 	}
 }
 
-func delTask(domain string,value string) bool{
+func delTask(domain string, field string) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0, // use default DB
 	})
 	_, err := client.Ping().Result()
-	if err != nil {
-		return false
-	}
-	result,_ := client.LRem(domain,0,value).Result()
-	if result > 0 {
-		return true
-	}else{
-		return false
+	if err == nil {
+		client.HDel(REDIS_KEY + "." + domain, field).Result()
 	}
 }

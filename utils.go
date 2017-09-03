@@ -2,7 +2,6 @@ package main
 
 import (
 	"path/filepath"
-	"io/ioutil"
 	"strings"
 	"os/exec"
 	"fmt"
@@ -34,18 +33,8 @@ func getFilePathName(filename string) string {
 	return filepath.Join(current_dir,filename)
 }
 
-//参数的filename包含路径
-func editDoingFunc(doingFunc func([]string),params []string) error {
-	files, _ := ioutil.ReadDir(current_dir)
-	for _,value := range files{
-		if strings.HasSuffix(value.Name(),DOING_SUFFIX) {
-			doingFunc(params)
-		}
-	}
-	return nil
-}
-
-func printTask(num int,task Task){
+func printTask(number string,task Task){
+	num,_ := strconv.Atoi(number)
 	if task.State == true {
 		color.Green("%s %03d: %s\n", DONE_MARK2, num, strings.TrimSpace(task.Content))
 	}else{
