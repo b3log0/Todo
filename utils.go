@@ -33,8 +33,7 @@ func getFilePathName(filename string) string {
 	return filepath.Join(current_dir,filename)
 }
 
-func printTask(number string,task Task){
-	num,_ := strconv.Atoi(number)
+func printTask(num int,task Task){
 	if task.State == true {
 		color.Green("%s %03d: %s\n", DONE_MARK2, num, strings.TrimSpace(task.Content))
 	}else{

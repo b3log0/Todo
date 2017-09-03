@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/go-redis/redis"
-	"fmt"
+	"strconv"
+
 )
 
 func setCurrentDomain(domain string) {
@@ -104,7 +105,7 @@ func setTask(domain string, index int64, task string) {
 	})
 	_, err := client.Ping().Result()
 	if err == nil {
-		client.HSet(REDIS_KEY + "." + domain, string(index), task).Result()
+		client.HSet(REDIS_KEY + "." + domain, strconv.FormatInt(index,10), task).Result()
 	}
 }
 
@@ -118,7 +119,7 @@ func getTask(domain string, index int64) string {
 	if err != nil {
 		return ""
 	}
-	result, _ := client.HGet(REDIS_KEY + "." + domain, string(index)).Result()
+	result, _ := client.HGet(REDIS_KEY + "." + domain, strconv.FormatInt(index,10)).Result()
 	return result
 }
 
@@ -146,7 +147,6 @@ func getAllTasks(domain string) map[string]string {
 	_, err := client.Ping().Result()
 	if err == nil {
 		result, _ := client.HGetAll(REDIS_KEY + "." + domain).Result()
-		fmt.Println(result["01"])
 		return result
 	} else {
 		return nil
