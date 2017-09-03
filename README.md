@@ -1,15 +1,15 @@
 # Todo
-a cli todo list 
-**本项目改写自mattn大神的项目[todo](https://github.com/mattn/todo)**
-mattn的todo简单好用，在使用过程中，我发现自己想要对不同的项目的todo清单进行分类，而原项目没有支持
-于是自行改写成本项目，修改了命令行工具包（[cli](https://github.com/urfave/cli)比mattn使用的[commander](https://github.com/gonuts/commander)star数更多一些）
+一个基于命令行的Todo list
 
-感谢大神的代码，让我省下了一半的时间（todo文件的读写程序完全照搬）
+- 分门别类，通过序号快速切换
+- 基于Redis存储
+- 定时提醒，通知推送（暂时只有Linux版）
 
-基于mattn的todo上，多了如下功能：
-- new指令：创建一个新的todo类型
-- remove指令：删除指定的数据类型
+#### 开发日志
+原有功能重构完成，需要考虑redis的持久化（导入导出）
+issue待实现，基于先有方式实现起来会更容易
 
+#### 使用示例
 使用过程可能如下(图例中是在当前目录下执行的指令，所以有./，实际放到环境变量下的指令不需要加)：
 ```shell
 todo #显示当前有何类型

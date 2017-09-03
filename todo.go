@@ -4,30 +4,16 @@ import (
     "github.com/urfave/cli"
     "os"
     "sort"
-    "path/filepath"
     "strconv"
+
 )
 
-const (
-    doing_suffix = ".doing"
-    todo_suffix = ".todo"
-    default_type_name = "main"
-)
 
-var current_dir string
-    
+
 func main() {
-    current_dir = os.Getenv("HOME")
-    if current_dir == "" {
-        current_dir = os.Getenv("USERPROFILE")
-    }
-    current_dir = filepath.Join(current_dir,todo_suffix)
-    _,err := os.Stat(current_dir)
-    if os.IsNotExist(err) {
-        os.Mkdir(current_dir,os.ModePerm)
-        addNewTask(filepath.Join(current_dir, default_type_name + doing_suffix))
-        addNewTask(filepath.Join(current_dir, "todo.link"))
-    }
+    //考虑此处进行初始化redis
+    initTodo()
+
     var todoType string
     app := cli.NewApp()
     app.Name = "ToDo"
@@ -45,7 +31,7 @@ func main() {
             Name: "list",
             Aliases: []string{"l"},
             Action: func(c *cli.Context) error{
-                editDoingFunc(listTasks,nil)
+                listTasks()
                 return nil
             },
         },
@@ -54,8 +40,8 @@ func main() {
             Aliases: []string{"a"},
             Action: func(c *cli.Context) error{
                 if c.NArg() > 0{
-                    editDoingFunc(addNewTodo,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    addNewTodo(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task",103)
                 }
@@ -66,8 +52,8 @@ func main() {
             Name: "clean",
             Aliases:[]string{"c"},
             Action: func(c *cli.Context) error {
-                editDoingFunc(cleanCurrentList,nil)
-                editDoingFunc(listTasks,nil)
+                cleanCurrentList()
+                listTasks()
                 return nil
             },
         },
@@ -76,8 +62,8 @@ func main() {
             Aliases:[]string{"dd"},
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
-                    editDoingFunc(deleteTodoByNumber,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    deleteTodoByNumber(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
@@ -89,8 +75,8 @@ func main() {
             Aliases:[]string{"d"},
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
-                    editDoingFunc(doneByNumber,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    doneByNumber(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
@@ -104,10 +90,10 @@ func main() {
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
                     task_name := c.Args()[0]
-                    errMsg := addNewTask(filepath.Join(current_dir, task_name + todo_suffix))
-                    if errMsg != nil {
-                        return cli.NewExitError("cannot create a new file for the list",101)
-                    }
+                    addNewTask(task_name)
+                    // if errMsg != nil {
+                    //     return cli.NewExitError("cannot create a new file for the list",101)
+                    // }
                 }else{
                     return cli.NewExitError("create new todo list error, a name is required",100)
                 }
@@ -120,8 +106,8 @@ func main() {
             Aliases:[]string{"u"},
             Action: func(c *cli.Context) error {
                 if c.NArg() > 0{
-                    editDoingFunc(undoneByNumber,c.Args())
-                    editDoingFunc(listTasks,nil)
+                    undoneByNumber(c.Args())
+                    listTasks()
                 }else{
                     return cli.NewExitError("need input a task number",104)
                 }
@@ -150,7 +136,11 @@ func main() {
     //定义一级指令行为，有参数时显示指定序号的todo清单内容，否则显示所有todo清单名称
     app.Action = func(c *cli.Context) error {
         if c.NArg() > 0{
-            listTasksByOrder(c.Args()[0])
+            arg,err := strconv.Atoi(c.Args()[0])
+            if err!= nil{
+                return cli.NewExitError("need input a task number",104)
+            }
+            listTasksByOrder(arg)
         }
         showTypes()
         return nil
