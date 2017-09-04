@@ -9,13 +9,14 @@ import (
 
 const (
 	REDIS_KEY = "org.b3log.todo"
-	CURRENT_KEY = "org.b3log.todo.current"
 	TASK_MARK1 = " "
 	TASK_MARK2 = "*"
 	DONE_MARK1 = "\u2610" //on Mac
 	DONE_MARK2 = "\u2611" //on Mac
 	TODO_EXPORT_MD = "TodoList.md"
 	TODO_EXPORT_JSON = "TodoList.json"
+	TODO_CRON_FILE = "todo.cron"
+	TODO_PROJ_HOME = "github.com/b3log/Todo"
 )
 
 //redis client

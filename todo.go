@@ -146,6 +146,19 @@ func main() {
             },
         },
         {
+            Name:"notify",
+            Aliases:[]string{"n"},
+            Action: func(c *cli.Context) error {
+                if c.NArg() > 0{
+                    notifyByNumber(c.Args())
+                    listTasks()
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
+                return nil
+            },
+        },
+        {
             Name:"new",
             Aliases:[]string{"n"},
             Usage: "create a new file for task",
