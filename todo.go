@@ -36,6 +36,42 @@ func main() {
             },
         },
         {
+            Name: "export",
+            Aliases: []string{"ex"},
+            Action: func(c *cli.Context) error{
+                if c.NArg() > 0{
+                    exportAllTasksJSON(c.Args())
+                }else{
+                    return cli.NewExitError("need a file path",103)
+                }
+                return nil
+            },
+        },
+        {
+            Name: "generate",
+            Aliases: []string{"ge"},
+            Action: func(c *cli.Context) error{
+                if c.NArg() > 0{
+                    exportAllTasksMD(c.Args())
+                }else{
+                    return cli.NewExitError("need a file path",103)
+                }
+                return nil
+            },
+        },
+        {
+            Name: "import",
+            Aliases: []string{"imp"},
+            Action: func(c *cli.Context) error{
+                if c.NArg() > 0{
+                    importTasks(c.Args())
+                }else{
+                    return cli.NewExitError("need a file path",103)
+                }
+                return nil
+            },
+        },
+        {
             Name: "add",
             Aliases: []string{"a"},
             Action: func(c *cli.Context) error{
@@ -84,6 +120,32 @@ func main() {
             },
         },
         {
+            Name:"doing",
+            Aliases:[]string{"doing"},
+            Action: func(c *cli.Context) error {
+                if c.NArg() > 0{
+                    doingByNumber(c.Args())
+                    listTasks()
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
+                return nil
+            },
+        },
+        {
+            Name:"comment",
+            Aliases:[]string{"comment"},
+            Action: func(c *cli.Context) error {
+                if c.NArg() > 0{
+                    doneByNumber(c.Args())
+                    listTasks()
+                }else{
+                    return cli.NewExitError("need input a task number",104)
+                }
+                return nil
+            },
+        },
+        {
             Name:"new",
             Aliases:[]string{"n"},
             Usage: "create a new file for task",
@@ -91,9 +153,6 @@ func main() {
                 if c.NArg() > 0{
                     task_name := c.Args()[0]
                     addNewTask(task_name)
-                    // if errMsg != nil {
-                    //     return cli.NewExitError("cannot create a new file for the list",101)
-                    // }
                 }else{
                     return cli.NewExitError("create new todo list error, a name is required",100)
                 }

@@ -33,16 +33,17 @@ func getDomains() []string {
 	return result
 }
 
-func delDomain(domain string) bool {
+func delDomain(domain string) {
 	result, _ := client.LRem(REDIS_KEY, 0, domain).Result()
 	if result > 0 {
-		return true
-	} else {
-		return false
+		for _,task := range getAllTasks(domain) {
+			delTask(domain,task.key)
+		}
 	}
 }
 
 func setTask(domain string, index string, task string) {
+	printError("setTask: "+domain+" "+index+" "+task)
 	client.HSet(REDIS_KEY + "." + domain, index, task).Result()
 }
 

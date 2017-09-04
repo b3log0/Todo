@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/go-redis/redis"
 	"github.com/fatih/color"
-	"strconv"
 	"sort"
 	"time"
 )
@@ -15,8 +14,8 @@ const (
 	TASK_MARK2 = "*"
 	DONE_MARK1 = "\u2610" //on Mac
 	DONE_MARK2 = "\u2611" //on Mac
-	// done_mark1 = "[ ]" //on Windows
-	// done_mark2 = "[*]" //on Windows
+	TODO_EXPORT_MD = "TodoList.md"
+	TODO_EXPORT_JSON = "TodoList.json"
 )
 
 //redis client
@@ -43,25 +42,15 @@ func initTodo(){
 
 func newTaskDetail(content string) TaskDetail{
 	return TaskDetail{
+		Domain:current_domain,
 		Content:content,
-		State:false,
+		State:0,
 		Comment:"",
 		Created:time.Now().Format("2006-01-02 15:04:05"),
-		Modified:time.Now().Format("2006-01-02 15:04:05"),
 	}
 }
 
-func getIdsFromParams(params []string) []int{
-	ids := []int{}
-	for _, arg := range params {
-		id, err := strconv.Atoi(arg)
-		if err == nil {
-			ids = append(ids, id)
-		}
 
-	}
-	return ids
-}
 
 func buildTaskList(taskMap map[string]string) []Task{
 	keySet := make([]string,0)
@@ -77,4 +66,13 @@ func buildTaskList(taskMap map[string]string) []Task{
 		}
 	}
 	return taskList
+}
+
+func DomainExists(domains []string, domain string) bool{
+	for _,value := range domains {
+		if domain == value {
+			return true
+		}
+	}
+	return false
 }

@@ -21,11 +21,13 @@ type Task struct{
 //save as Set
 type TaskDetail struct {
 	//注意大小写，大写表示public，小写表示private，json.Marshal要求public
+	//State: 0 todo 1 doing 2 done
+	Domain string `json:"domain"`
 	Content  string `json:"content"`
-	State    bool 	`json:"state"`
+	State    int 	`json:"state"`
 	Comment  string `json:"comment,omitempty"`
 	Created  string `json:"created"`
-	Modified string `json:"modified"`
+	Notify string `json:"notify,omitempty"`
 }
 
 
