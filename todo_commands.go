@@ -100,7 +100,7 @@ func notifyByNumber(params []string) {
         directory = os.Getenv("USERPROFILE")
     }
     filename := filepath.Join(directory,TODO_CRON_FILE)
-	w, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0666)
+	w, err := os.OpenFile(filename, os.O_APPEND | os.O_CREATE | os.O_RDWR, 0666)
 	if err != nil {
 		printError("File Open Error!")
 	}
