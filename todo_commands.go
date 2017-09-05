@@ -11,6 +11,7 @@ import (
 	"os"
 	"bufio"
 	"io"
+	"os/exec"
 )
 
 func showTypes() {
@@ -22,7 +23,7 @@ func showTypes() {
 func removeByNumber(param int) {
 	domain := getDomain(int64(param))
 	if domain == current_domain {
-		printError("不能删除当前使用的清单")
+		printError("Cannot delete the current todo list")
 		return
 	}
 	delDomain(domain)
@@ -94,35 +95,29 @@ func commentByNumber(params []string) {
 }
 
 func notifyByNumber(params []string) {
+	directory := os.Getenv("HOME")
+    if directory == "" {
+        directory = os.Getenv("USERPROFILE")
+    }
+    filename := filepath.Join(directory,TODO_CRON_FILE)
+	w, err := os.OpenFile(filename, os.O_TRUNC|os.O_CREATE|os.O_RDWR, 0666)
+	if err != nil {
+		printError("File Open Error!")
+	}
 	id, _ := strconv.Atoi(params[0])
 	task := TaskDetail{}
 	json.Unmarshal([]byte(getAllTasks(current_domain)[id].taskDetail), &task)
-
-	cronexpr := params[1:]
-	dir := os.Getenv("GOPATH")
-	_, err := os.Stat(dir)
-	if os.IsNotExist(err) {
-		os.Mkdir(dir, os.ModePerm)
+	cronexpr := ""
+	for i:=1; i < len(params); i++{
+		cronexpr=cronexpr + " " + params[i]
 	}
-
-	f, err := os.Create(filepath.Join(dir, TODO_CRON_FILE))
-	defer f.Close()
-	if err != nil {
-		printError("Create File Error!")
-		return
+	for i:=0; i<=5-len(params); i++{
+		cronexpr = cronexpr + " *"
 	}
-
-	var buffer bytes.Buffer
-	buffer.WriteString(cronexpr + "DISPLAY:0.0 notify-send " + task.Content + " " + task.Comment)
-	w, err := os.OpenFile(filepath.Join(dir, TODO_EXPORT_MD), os.O_APPEND | os.O_CREATE | os.O_RDWR, 0666)
-	if err != nil {
-		printError("Open File Error")
-		return
-	}
-	defer w.Close()
-	fmt.Fprintf(w, buffer.String())
-
-
+	message := cronexpr + " export DISPLAY=:0.0;notify-send '" + task.Content + "' '" + task.Comment + "'\n"
+	_, err = fmt.Fprintf(w, message)
+	w.Close()
+	exec.Command("crontab" , filename).Run()
 }
 
 func undoneByNumber(params []string) {
@@ -263,7 +258,6 @@ func importTasks(directory []string) {
 			if temp.Domain != "" && !DomainExists(getDomains(), temp.Domain) {
 				insertDomain(temp.Domain)
 			}
-			printError("setTask: " + temp.Domain + ", " + temp.Content)
 			setTask(temp.Domain, strconv.FormatInt(time.Now().UnixNano(), 10), line)
 		}
 	}
