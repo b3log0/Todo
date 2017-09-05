@@ -43,7 +43,6 @@ func delDomain(domain string) {
 }
 
 func setTask(domain string, index string, task string) {
-	printError("setTask: " + domain + " " + index + " " + task)
 	client.HSet(REDIS_KEY + "." + domain, index, task).Result()
 }
 
