@@ -10,7 +10,7 @@ import (
 
 
 
-func main() {
+func main2() {
     //考虑此处进行初始化redis
     initTodo()
 
@@ -32,6 +32,22 @@ func main() {
             Aliases: []string{"l"},
             Action: func(c *cli.Context) error{
                 listTasks()
+                return nil
+            },
+        },
+        {
+            Name: "push",
+            Aliases: []string{"ps"},
+            Action: func(c *cli.Context) error{
+                pushTasks()
+                return nil
+            },
+        },
+        {
+            Name: "pull",
+            Aliases: []string{"pl"},
+            Action: func(c *cli.Context) error{
+                pullTasks()
                 return nil
             },
         },

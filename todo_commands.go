@@ -266,3 +266,13 @@ func importTasks(directory []string) {
 func addNewTodo(params []string) {
 	setTask(current_domain, strconv.FormatInt(time.Now().UnixNano(), 10), newTaskDetail(strings.Join(params, " ")).toJSONStr())
 }
+
+func pushTasks(){
+	for _, domain := range getDomains() {
+		createBoard(domain)
+	}
+}
+
+func pullTasks(){
+
+}

@@ -4,32 +4,33 @@ import (
     "net/http"
     "io/ioutil"
     "bytes"
+    "fmt"
+    "encoding/json"
 )
 
 const(
     API_USER="zephyrcheung"
-    API_KEY=""
-    API_TOKEN=""
+    API_KEY="31238c876dc00f9e858fe9f70b939697"
+    API_TOKEN="79ba20868621208c142d3c8afcf69489bfd29dc73e590c4d9a83ff1a9a37f663"
 )
 
-func createBoard(board string){
+func createBoard(board string) string{
     api:="https://api.trello.com/1/boards/"
 
     jsonStr:= []byte("{\"name\":\""+board+"\",\"key\":\""+API_KEY+"\",\"token\":\""+API_TOKEN+"\"}")
     req,_:=http.NewRequest("POST",api,bytes.NewBuffer(jsonStr))
     req.Header.Set("Content-Type", "application/json")
     client := &http.Client{}
-    client.Do(req)
-    // resp, err := client.Do(req)
-    // if err != nil {
-    //     panic(err)
-    // }
-    // defer resp.Body.Close()
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
 
-    // fmt.Println("response Status:", resp.Status)
-    // fmt.Println("response Headers:", resp.Header)
-    // body, _ := ioutil.ReadAll(resp.Body)
-    // fmt.Println("response Body:", string(body))    
+    body, _ := ioutil.ReadAll(resp.Body)
+    boardResp:=BoardResp{}
+    json.Unmarshal(body,&boardResp)
+    return boardResp.Id
 }
 
 func getGroups(board string){
@@ -104,4 +105,22 @@ func openBoard(idBoard string){
     req.Header.Set("Content-Type", "application/json")
     client:=&http.Client{}
     client.Do(req) 
+}
+
+func main(){
+    fmt.Println(createBoard("testByGo"))
+}
+
+
+type BoardResp struct {
+    Id string
+    Name string
+    Desc string 
+}
+
+type CardResp struct {
+    Id string
+    Name string
+    Desc string
+    IdList string
 }
