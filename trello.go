@@ -42,9 +42,18 @@ func getGroups(board string){
     // fmt.Println("response Body: ",string(body))
 }
 
-func getBoards(){
+func getBoards() []BoardResp {
     api:="https://api.trello.com/1/members/"+API_USER+"/boards?fields=id,name&key="+API_KEY+"&token="+API_TOKEN
-    http.Get(api)
+    resp,err:=http.Get(api)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body,_ := ioutil.ReadAll(resp.Body)
+    boardResps := make{[]BoardResp}
+    json.Unmarshal(body,&boardResps)
+    return boardResps
 }
 
 func getCards(board string){
@@ -108,7 +117,7 @@ func openBoard(idBoard string){
 }
 
 func main(){
-    fmt.Println(createBoard("testByGo"))
+    fmt.Println(getBoard())
 }
 
 

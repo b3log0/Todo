@@ -17,16 +17,3 @@ type Card struct {
 	title string
 	description string
 }
-
-type BoardResp struct {
-	Id string
-	Name string
-	Desc string 
-}
-
-type CardResp struct {
-	Id string
-	Name string
-	Desc string
-	IdList string
-}

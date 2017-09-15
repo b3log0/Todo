@@ -268,8 +268,11 @@ func addNewTodo(params []string) {
 }
 
 func pushTasks(){
+	//sync only selected domain
+	domain :=
 	for _, domain := range getDomains() {
-		createBoard(domain)
+		id := createBoard(current_domain)
+		
 	}
 }
 
