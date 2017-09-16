@@ -33,13 +33,18 @@ func createBoard(board string) string{
     return boardResp.Id
 }
 
-func getGroups(board string){
-    api:="https://api.trello.com/1/boards/"+board+"?fields=id,name,idOrganization,dateLastActivity&lists=open&list_fields=id,name&key="+API_KEY+"&token="+API_TOKEN
-    http.Get(api)
-    // resp,_ := http.Get(api)
-    // defer resp.Body.Close()
-    // body,_:=ioutil.ReadAll(resp.Body)
-    // fmt.Println("response Body: ",string(body))
+func getGroups(board string) []GroupResp{
+    api:="https://api.trello.com/1/boards/"+board+"?fields=id,name&lists=open&list_fields=id,name&key="+API_KEY+"&token="+API_TOKEN
+    resp,err:=http.Get(api)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body,_ := ioutil.ReadAll(resp.Body)
+    boardResp := BoardResp{}
+    json.Unmarshal(body,&boardResp)
+    return boardResp.GroupList
 }
 
 func getBoards() []BoardResp {
@@ -51,17 +56,26 @@ func getBoards() []BoardResp {
     defer resp.Body.Close()
 
     body,_ := ioutil.ReadAll(resp.Body)
-    boardResps := make{[]BoardResp}
+    boardResps := []BoardResp{}
     json.Unmarshal(body,&boardResps)
     return boardResps
 }
 
-func getCards(board string){
+func getCards(board string) []CardResp {
     api:="https://api.trello.com/1/boards/"+board+"/cards/?fields=id,name,desc,idList&key="+API_KEY+"&token="+API_TOKEN
-    http.Get(api)
+    resp,err:=http.Get(api)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body,_ := ioutil.ReadAll(resp.Body)
+    cardResps := []CardResp{}
+    json.Unmarshal(body,&cardResps)
+    return cardResps
 }
 
-func createCard(card string,desc string,idList string){
+func createCard(card string,desc string,idList string) CardResp {
     api:="https://api.trello.com/1/cards"
 
     jsonStr:= []byte("{\"name\":\""+card+"\",\"desc\":\""+desc+"\",\"idList\":\""+idList+"\",\"key\":\""+API_KEY+"\",\"token\":\""+API_TOKEN+"\"}")
@@ -69,6 +83,15 @@ func createCard(card string,desc string,idList string){
     req.Header.Set("Content-Type", "application/json")
     client := &http.Client{}
     client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    cardResp:=CardResp{}
+    json.Unmarshal(body,&cardResp)
+    return cardResp
 }
 
 func updateCard(idCard string,card string,desc string,idList string){
@@ -116,20 +139,8 @@ func openBoard(idBoard string){
     client.Do(req) 
 }
 
-func main(){
-    fmt.Println(getBoard())
+func main2(){
+    fmt.Println(getGroups("59b644d161104b3e83978b19"))
 }
 
 
-type BoardResp struct {
-    Id string
-    Name string
-    Desc string 
-}
-
-type CardResp struct {
-    Id string
-    Name string
-    Desc string
-    IdList string
-}

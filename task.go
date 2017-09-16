@@ -28,9 +28,29 @@ type TaskDetail struct {
 	Comment  string `json:"comment,omitempty"`
 	Created  string `json:"created"`
 	Notify string `json:"notify,omitempty"`
+	BoardId string `json:"boardId,omitempty"`
+	ListId string `json:"listId,omitempty"`
+	CardId string `json:"cardId,omitempty"`
 }
 
+type Board struct {
+    Id string `json:"id"`
+    Name string `json:"name"`
+    Desc string `json:"desc"`
+    GroupList []GroupResp `json:"lists,omitempty"`
+}
 
+type Group struct {
+    Id string `json:"id"`
+    Name string `json:"name"`
+}
+
+type Card struct {
+    Id string `json:"id"`
+    Name string `json:"name"`
+    Desc string `json:"desc"`
+    IdList string `json:"idList"`
+}
 
 func (t TaskDetail) toJSONStr() string {
 	task, _ := json.Marshal(&t)

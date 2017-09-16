@@ -10,7 +10,7 @@ import (
 
 
 
-func main2() {
+func main() {
     //考虑此处进行初始化redis
     initTodo()
 
@@ -32,6 +32,14 @@ func main2() {
             Aliases: []string{"l"},
             Action: func(c *cli.Context) error{
                 listTasks()
+                return nil
+            },
+        },
+        {
+            Name: "trello",
+            Aliases: []string{"tr"},
+            Action: func(c *cli.Context) error{
+                trelloTasks()
                 return nil
             },
         },

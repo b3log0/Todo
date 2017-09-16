@@ -268,14 +268,54 @@ func addNewTodo(params []string) {
 }
 
 func pushTasks(){
+
+	
+}
+
+func trelloTasks() {
+	//the first time push to trello
 	//sync only selected domain
-	domain :=
-	for _, domain := range getDomains() {
-		id := createBoard(current_domain)
-		
+	//TODO: the first time when push, the ids should save into redis
+	board := BoardResp{}
+	todoList := ""
+	doingList := ""
+	doneList := ""
+
+	id := createBoard(current_domain)
+
+	for _,group := range getGroups(id) {
+		switch group.Name {
+			case "待办" : todoList = group.Id
+			case "进行中" : doingList = group.Id
+			case "完成" : doneList = group.Id
+		}
 	}
+
+	for _,task := range getAllTasks(current_domain){
+		taskDetail := TaskDetail{}
+		json.Unmarshal([]byte(task.taskDetail), &taskDetail)
+		card := TaskDetail{}
+		switch taskDetail.State {
+		case 0: 
+			card = createCard(taskDetail.Content,taskDetail.Comment,todoList)
+		case 1:
+			card = createCard(taskDetail.Content,taskDetail.Comment,doingList)
+		case 2:
+			card = createCard(taskDetail.Content,taskDetail.Comment,doneList)
+		}
+		taskDetail.BoardId = id
+		taskDetail.ListId = card.IdList
+		taskDetail.CardId = card.Id
+		setTask(current_domain, card.Id, taskDetail.toJSONStr())
+	}
+
+
 }
 
 func pullTasks(){
-
+	for _,board := range getBoards() {
+		insertDomain(board.Name)
+		cards := getCards(board.Id)
+		
+	}
 }
