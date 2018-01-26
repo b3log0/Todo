@@ -1,5 +1,5 @@
 package main
-
+/*
 import (
 	"strings"
 	"encoding/json"
@@ -269,7 +269,7 @@ func addNewTodo(params []string) {
 
 func pushTasks(){
 
-	
+
 }
 
 func trelloTasks() {
@@ -296,7 +296,7 @@ func trelloTasks() {
 		json.Unmarshal([]byte(task.taskDetail), &taskDetail)
 		card := TaskDetail{}
 		switch taskDetail.State {
-		case 0: 
+		case 0:
 			card = createCard(taskDetail.Content,taskDetail.Comment,todoList)
 		case 1:
 			card = createCard(taskDetail.Content,taskDetail.Comment,doingList)
@@ -316,6 +316,7 @@ func pullTasks(){
 	for _,board := range getBoards() {
 		insertDomain(board.Name)
 		cards := getCards(board.Id)
-		
+
 	}
 }
+*/

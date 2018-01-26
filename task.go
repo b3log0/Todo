@@ -33,7 +33,7 @@ type TaskDetail struct {
 	CardId string `json:"cardId,omitempty"`
 }
 
-type Board struct {
+/*type Board struct {
     Id string `json:"id"`
     Name string `json:"name"`
     Desc string `json:"desc"`
@@ -50,7 +50,7 @@ type Card struct {
     Name string `json:"name"`
     Desc string `json:"desc"`
     IdList string `json:"idList"`
-}
+}*/
 
 func (t TaskDetail) toJSONStr() string {
 	task, _ := json.Marshal(&t)
